@@ -20,6 +20,12 @@
 	</head>
 	<body>
 		<div class="container">
+            <div class="alert alert-light" role="alert">
+            Create your account
+            </div>
+            
+            <div id="message-div"></div>
+
 			<form <?php echo "action='".htmlspecialchars($_SERVER["PHP_SELF"])."' method='POST'"?>>
 				<div class="form-group">
 					<label for="fname">First Name</label>
@@ -28,6 +34,7 @@
 						class="form-control"
 						name="fname"
 						placeholder="Enter first name"
+                        required
 					/>
 				</div>
                 <div class="form-group">
@@ -37,6 +44,7 @@
 						class="form-control"
 						name="sname"
 						placeholder="Enter surname"
+                        required
 					/>
 				</div>
 				<div class="form-group">
@@ -47,6 +55,7 @@
 						name="email"
 						aria-describedby="emailHelp"
 						placeholder="Enter email"
+                        required
 					/>
 					<small id="emailHelp" class="form-text text-muted"
 						>We'll never share your email with anyone else.</small
@@ -59,6 +68,7 @@
 						class="form-control"
 						name="password"
 						placeholder="Password"
+                        required
 					/>
 				</div>
 				<div class="form-group">
@@ -68,10 +78,10 @@
 						class="form-control"
 						name="confirm_password"
 						placeholder="Confirm Password"
+                        required
 					/>
 				</div>
 				<input type="submit" class="btn btn-primary" name="register" value="Register"/>
-                <?php echo $message = ""; ?>
             </form>
 		</div>
 		
@@ -91,6 +101,7 @@
 			crossorigin="anonymous"
 		></script>
         <?php
+
         $firstname = "";
         $surname = "";
         $email = "";
@@ -99,14 +110,36 @@
 
         if (isset($_POST['register'])) {
 
-                    $firstname = $_POST['fname'];
-                    $surname = $_POST['sname'];
-                    $email = $_POST['email'];
-                    $password = $_POST['password'];
-                
+            include "dep\session.php";
 
-                echo "<script> alert('".$firstname.$surname.$email.$password."')</script>";
-                $message ="abc";
+            $firstname = $_POST['fname'];
+            $surname = $_POST['sname'];
+            $email = $_POST['email'];
+            $password = $_POST['password'];
+            $confirm_password = $_POST['confirm_password'];
+
+            
+
+            if($firstname && $surname && $email && $password){
+                if($password == $confirm_password){
+                    
+                    //Register user => session.php)
+                    register_user($firstname,$surname,$email,$password,$conn);
+                
+                }else{
+                    echo
+                    "<script>
+                        document.getElementById('message-div').innerHTML = 'Passwords do not match';
+                        document.getElementById('message-div').className = 'alert alert-danger';
+                    </script>";
+                }
+            }else{
+                echo
+                    "<script>
+                        document.getElementById('message-div').innerHTML = 'You left a field empty!';
+                        document.getElementById('message-div').className = 'alert alert-danger';
+                    </script>";
+            }
         }
         ?>
 	</body>
