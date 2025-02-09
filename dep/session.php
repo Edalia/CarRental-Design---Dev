@@ -48,35 +48,46 @@ function register_user($f,$s,$e,$p,$c){
                 document.getElementById('message-div').innerHTML = 'There was an error creating your account';
                 document.getElementById('message-div').className = 'alert alert-danger';
             </script>";
+        $stmt->close();
+        $c->close();
     } 
 }
+
+
+$_SESSION['id'] = null;
 
 //Sign in User
 function sign_in_user($e, $p, $conn){
 
     //ensure fields are not empty
-    
+
     if($e&&$p){
+        
         //Prepare statements before sign in
         $stmt = $conn->prepare("SELECT user_email,user_password FROM `user` WHERE user_email = ?");
         $stmt->bind_param("s", $e);
         $stmt->execute();
 
-        $user = $stmt->get_result()->fetch_assoc();
+        //Fetch email and password from DB
+        $query_user = $stmt->get_result()->fetch_assoc();
 
-        if($user){
+        //Check if this user record is in DB
+        if($query_user){
 
             //verify password by comparing password field hash with DB hash
-            if(password_verify($p, $user['user_password'])){
-                echo
-                "<script>
-                    document.getElementById('message-div').innerHTML = 'Welcome ".$user['user_email']."';
-                    document.getElementById('message-div').className = 'alert alert-success';
-                </script>";
+            if(password_verify($p, $query_user['user_password'])){
+                
+                $found_user = $conn->query("SELECT user_id, user_fname FROM `user` WHERE user_email = '".$query_user['user_email']."'");
+                $user_account = $found_user->fetch_assoc();
 
+                //start user session
+                session_start();
+                $_SESSION['id'] = $user_account['user_id'];
 
-            }
-            else{
+                
+                header('Location: index.php');
+
+		    }else{
                 echo
                 "<script>
                     document.getElementById('message-div').innerHTML = 'Incorrect email or password';
@@ -84,6 +95,7 @@ function sign_in_user($e, $p, $conn){
                 </script>";
 
                 $stmt->close();
+                $conn->close();
             }
         }else{
             echo 
@@ -92,6 +104,7 @@ function sign_in_user($e, $p, $conn){
                 document.getElementById('message-div').className = 'alert alert-danger';
             </script>";
             $stmt->close();
+            $conn->close();
         }
     }else{
     echo
@@ -103,6 +116,14 @@ function sign_in_user($e, $p, $conn){
 
     
         
+}
+
+
+function logout(){
+    session_destroy();
+    header('Location: index.php');
+    exit();
+
 }
 
 ?>
