@@ -16,55 +16,43 @@
 			crossorigin="anonymous"
 		/>
 
-		<title>Register an account</title>
+		<title>Sign in to your account</title>
 	</head>
 	<body>
 		<div class="container">
-			<form>
-				<div class="form-group">
-					<label for="fname">First Name</label>
-					<input
-						type="text"
-						class="form-control"
-						id="fname"
-						placeholder="Enter first name"
-					/>
-				</div>
+            <div class="alert alert-light" role="alert">
+            Sign in
+            </div>
+            
+            <div id="message-div"></div>
+
+			<form <?php echo "action='".htmlspecialchars($_SERVER["PHP_SELF"])."' method='POST'"?>>
 				<div class="form-group">
 					<label for="email">Email address</label>
 					<input
-						type="email"
+						type="text"
 						class="form-control"
-						id="email"
+						name="email"
 						aria-describedby="emailHelp"
 						placeholder="Enter email"
+                        required
 					/>
-					<small id="emailHelp" class="form-text text-muted"
-						>We'll never share your email with anyone else.</small
-					>
 				</div>
 				<div class="form-group">
 					<label for="password">Password</label>
 					<input
 						type="password"
 						class="form-control"
-						id="password"
+						name="password"
 						placeholder="Password"
+                        required
 					/>
 				</div>
-				<div class="form-group">
-					<label for="confirm_password">Confirm Password</label>
-					<input
-						type="password"
-						class="form-control"
-						id="confirm_password"
-						placeholder="Confirm Password"
-					/>
-				</div>
-				<button type="submit" class="btn btn-primary">Submit</button>
-			</form>
+				<input type="submit" class="btn btn-primary" name="login" value="Sign in"/>
+            </form>
 		</div>
-		<script
+		
+        <script
 			src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
 			integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
 			crossorigin="anonymous"
@@ -79,6 +67,21 @@
 			integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
 			crossorigin="anonymous"
 		></script>
-		<script src="js/session.js"></script>
+        <?php
+
+        $email = "";
+        $password = "";
+
+        if (isset($_POST['login'])) {
+
+            include "dep\session.php";
+
+            $email = $_POST['email'];
+            $password = $_POST['password'];
+
+			//sign in user -> session.php
+			sign_in_user($email, $password,$conn);
+        }
+        ?>
 	</body>
 </html>
