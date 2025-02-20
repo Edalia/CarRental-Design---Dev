@@ -19,70 +19,75 @@
 		<title>Register an account</title>
 	</head>
 	<body>
-		<div class="container">
-            <div class="alert alert-light" role="alert">
-            Create your account
-            </div>
+		<div class="container" style="width:100%;">
+			<div class="card" style="margin-top: 2.5%; display:flex; align-items: center;">
+				<div class="card-body" style="width:100%;">
             
-            <div id="message-div"></div>
+					<h2> Create your account</h2>
+				
+					<div id="message-div"></div>
 
-			<form <?php echo "action='".htmlspecialchars($_SERVER["PHP_SELF"])."' method='POST'"?>>
-				<div class="form-group">
-					<label for="fname">First Name</label>
-					<input
-						type="text"
-						class="form-control"
-						name="fname"
-						placeholder="Enter first name"
-                        required
-					/>
+					<form <?php echo "action='".htmlspecialchars($_SERVER["PHP_SELF"])."' method='POST'"?>>
+						<div class="form-group">
+							<label for="fname">First Name</label>
+							<input
+								type="text"
+								class="form-control"
+								name="fname"
+								placeholder="Enter first name"
+								required
+							/>
+						</div>
+						<div class="form-group">
+							<label for="sname">Surname</label>
+							<input
+								type="text"
+								class="form-control"
+								name="sname"
+								placeholder="Enter surname"
+								required
+							/>
+						</div>
+						<div class="form-group">
+							<label for="email">Email address</label>
+							<input
+								type="text"
+								class="form-control"
+								name="email"
+								aria-describedby="emailHelp"
+								placeholder="Enter email"
+								required
+							/>
+							<small id="emailHelp" class="form-text text-muted"
+								>We'll never share your email with anyone else.</small
+							>
+						</div>
+						<div class="form-group">
+							<label for="password">Password</label>
+							<input
+								type="password"
+								class="form-control"
+								name="password"
+								placeholder="Password"
+								required
+							/>
+						</div>
+						<div class="form-group">
+							<label for="confirm_password">Confirm Password</label>
+							<input
+								type="password"
+								class="form-control"
+								name="confirm_password"
+								placeholder="Confirm Password"
+								required
+							/>
+						</div>
+						<input type="submit" class="btn btn-primary" name="register" value="Register"/>
+					</form>
+					<br>
+					<p>Already have an account? <a href="../CarRental/login.php">Sign in here</a></p>
 				</div>
-                <div class="form-group">
-					<label for="sname">Surname</label>
-					<input
-						type="text"
-						class="form-control"
-						name="sname"
-						placeholder="Enter surname"
-                        required
-					/>
-				</div>
-				<div class="form-group">
-					<label for="email">Email address</label>
-					<input
-						type="text"
-						class="form-control"
-						name="email"
-						aria-describedby="emailHelp"
-						placeholder="Enter email"
-                        required
-					/>
-					<small id="emailHelp" class="form-text text-muted"
-						>We'll never share your email with anyone else.</small
-					>
-				</div>
-				<div class="form-group">
-					<label for="password">Password</label>
-					<input
-						type="password"
-						class="form-control"
-						name="password"
-						placeholder="Password"
-                        required
-					/>
-				</div>
-				<div class="form-group">
-					<label for="confirm_password">Confirm Password</label>
-					<input
-						type="password"
-						class="form-control"
-						name="confirm_password"
-						placeholder="Confirm Password"
-                        required
-					/>
-				</div>
-				<input type="submit" class="btn btn-primary" name="register" value="Register"/>
-            </form>
+			</div>
 		</div>
 		
         <script

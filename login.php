@@ -19,37 +19,43 @@
 		<title>Sign in to your account</title>
 	</head>
 	<body>
-		<div class="container">
-            <div class="alert alert-light" role="alert">
-            Sign in
-            </div>
+		<div class="container" style="width:100%;">
+			<div class="card" style="margin-top: 5%; display:flex; align-items: center;">
+				<div class="card-body" style="width:100%;">
             
-            <div id="message-div"></div>
+				<h2> Sign in to your account</h2>
+            
+            	<div id="message-div"></div>
 
-			<form <?php echo "action='".htmlspecialchars($_SERVER["PHP_SELF"])."' method='POST'"?>>
-				<div class="form-group">
-					<label for="email">Email address</label>
-					<input
-						type="text"
-						class="form-control"
-						name="email"
-						aria-describedby="emailHelp"
-						placeholder="Enter email"
-                        required
-					/>
-				</div>
-				<div class="form-group">
-					<label for="password">Password</label>
-					<input
-						type="password"
-						class="form-control"
-						name="password"
-						placeholder="Password"
-                        required
-					/>
-				</div>
-				<input type="submit" class="btn btn-primary" name="login" value="Sign in"/>
-            </form>
+				<form style="margin-top: 40px;" <?php echo "action='".htmlspecialchars($_SERVER["PHP_SELF"])."' method='POST'"?>>
+					<div class="form-group">
+						<label for="email">Email address</label>
+						<input
+							type="text"
+							class="form-control"
+							name="email"
+							aria-describedby="emailHelp"
+							placeholder="Enter email"
+							required
+						/>
+					</div>
+					<div class="form-group">
+						<label for="password">Password</label>
+						<input
+							type="password"
+							class="form-control"
+							name="password"
+							placeholder="Password"
+							required
+						/>
+					</div>
+					<input type="submit" class="btn btn-primary" name="login" value="Sign in"/>
+				</form>
+				<br>
+				<p>Dont have an account? <a href="../CarRental/register.php">Register here</a></p>
+				
+			</div>
+			</div>
 		</div>
 		
         <script

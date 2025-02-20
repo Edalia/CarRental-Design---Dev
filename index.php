@@ -32,31 +32,39 @@
 			include "header.php";
 		
 		?>
-		<div class="container text-center">
+		<div class="container text-center" style="margin-top:65px;">
 			<div class="row">
-			<?php
-			
-			//for car in cars array, render specific cards
-			foreach($cars as $car){
+				<?php
+				
+				if($query == ''){
 
-			?>
+					//for every car in cars array, render the car sections/cards
+					foreach($cars as $car){
+
+				?>
 				<div class="col">
-					<div class="card" style="width: 18rem;">
-					<img src=<?php echo $car[5]?> style="width: 100%; height:30vh;" alt="...">
+					<div class="card" style="width: 20rem; margin-top: 5px;">
+					<img src=<?php echo $car[5]?> style="width: 100%; height:30vh;" alt=<?php echo $car[5]?> >
 						<div class="card-body">
+							
+							<!--Car Name-->
 							<h4><?php echo $car[1]?></h4>
+							<!--Car Transmission-->
 							<p class="card-text">Transmission: <?php echo $car[2]?></p>
+							<!--Car Seats-->
 							<p class="card-text"><?php echo $car[3]?></p>
+							<!--Car Rent Price-->
 							<p class="card-text">£ <?php echo $car[4]?> / day</p>
 							<button type="button" class="btn btn-outline-primary">Rent out <?php echo $car[1]; ?></button>
 						</div>
 					</div>
+					
 				</div>
-
 			<?php
 
-			//end of car cards
-			}
+				
+					}//end of loop
+				}//endif
 			?>
 			</div>
 		</div>

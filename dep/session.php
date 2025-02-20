@@ -112,10 +112,7 @@ function sign_in_user($e, $p, $conn){
                     document.getElementById('message-div').innerHTML = 'Empty fields!';
                     document.getElementById('message-div').className = 'alert alert-danger';
                 </script>";
-    }
-
-    
-        
+    }       
 }
 
 
