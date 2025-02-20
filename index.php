@@ -20,52 +20,88 @@
 	</head>
 	<body>
 		<?php
-			$cars = array (
-						array(1,"Volvo xc60","Auto","4 seater",30,"img/volvo.jpg"),
-						array(2,"Mazda 3","Auto","4 seater",10,"img/mazda3.jpg"),
-						array(3,"Ford Ranger","Auto","4 seater",90,"img/ranger.jpg"),
-						array(4,"Nissan Juke","Auto","4 seater",25,"img/juke.jpg"),
-						array(5,"2008 VW Golf","Manual","4 seater",30,"img/golf08.jpg"),
-						array(6,"Audi A4","Auto","4 seater",40,"img/audia4.jpg")
-			);
-
 			include "header.php";
-		
+
 		?>
 		<div class="container text-center" style="margin-top:65px;">
 			<div class="row">
 				<?php
-				
-				if($query == ''){
 
-					//for every car in cars array, render the car sections/cards
-					foreach($cars as $car){
+				//if no search has been made, output all cars available in DB
+				if(isset($_GET['search'])== null){
+
+					$sql = "SELECT * FROM `car`";
+					$result = $conn->query($sql);
+
+					//for every car in cars array, output the car sections/cards
+					while($car = $result->fetch_assoc()) {
 
 				?>
 				<div class="col">
 					<div class="card" style="width: 20rem; margin-top: 5px;">
-					<img src=<?php echo $car[5]?> style="width: 100%; height:30vh;" alt=<?php echo $car[5]?> >
+					<img src=<?php echo $car['car_img_path']?> style="width: 100%; height:30vh;" alt=<?php echo $car['car_img_path']?> >
 						<div class="card-body">
 							
 							<!--Car Name-->
-							<h4><?php echo $car[1]?></h4>
+							<h4><?php echo $car['car_model']?></h4>
+							
 							<!--Car Transmission-->
-							<p class="card-text">Transmission: <?php echo $car[2]?></p>
+							<p class="card-text">Transmission: <?php echo $car['car_gear']?></p>
 							<!--Car Seats-->
-							<p class="card-text"><?php echo $car[3]?></p>
+							<p class="card-text"><?php echo $car['car_seat']?> seater</p>
 							<!--Car Rent Price-->
-							<p class="card-text">£ <?php echo $car[4]?> / day</p>
-							<button type="button" class="btn btn-outline-primary">Rent out <?php echo $car[1]; ?></button>
+							<p class="card-text">£ <?php echo $car['car_price']?> / day</p>
+							<button type="button" class="btn btn-outline-primary">Rent out <?php echo $car['car_model']; ?></button>
 						</div>
-					</div>
-					
+					</div>	
 				</div>
 			<?php
 
-				
 					}//end of loop
-				}//endif
+
+				}else{
+					//when search is made, get value from field
+
+					$searchQuery = $_GET['search_field']."%";
+					
+					try{
+					
+						/*	Search for records of cars according to car model OR according to transmission(auto/manual) .
+							Prepare statements to avoid injection.
+						*/
+						$search_stmt = $conn->prepare("SELECT * FROM `car` WHERE `car_model` LIKE ? OR `car_gear` LIKE ?");
+						$search_stmt->bind_param("ss", $searchQuery,$searchQuery);
+						$search_stmt->execute();
+						
+						//Return results of cars as array
+						$search_result = $search_stmt->get_result();	
+					
 			?>
+				<div>
+					<a>Your search results for "<?php echo $_GET['search_field']; ?>". </a>
+					<a href ="../CarRental/index.php"; ?>Reset search</a>
+				</div>
+			<?php
+					
+						//for every car found in the query, render their cards
+						while($search_car = $search_result->fetch_assoc()){
+			?>
+			<div class="col">
+					<?php echo $search_car['car_model'];?>
+			</div>
+			<?php
+						}//endloop
+					}catch(Exception $e){
+			?>
+				There was an error in your search. Try again.
+
+			<?php
+
+					}//endtrycatch
+				}//endelse
+
+			?>
+
 			</div>
 		</div>
 		

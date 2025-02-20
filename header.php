@@ -11,7 +11,7 @@
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav mr-auto">
 				<li class="nav-item">
-					<form class="form-inline my-2 my-lg-2" <?php echo "action='".htmlspecialchars($_SERVER["PHP_SELF"])."' method='POST'"?>>
+					<form class="form-inline my-2 my-lg-2" <?php echo "action='".htmlspecialchars($_SERVER["PHP_SELF"])."' method='GET'"?>>
 						<input
 							class="form-control mr-sm-2"
 							name="search_field"
@@ -23,21 +23,7 @@
 					</form>
 				</li>
 			</ul>
-		<?php
-			$query = '';
-
-			// function search_car($q){
-			// $stmt = $conn->prepare("SELECT user_email,user_password FROM `user` WHERE user_email = ?");
-			// 		$stmt->bind_param("s", $e);
-			// 		$stmt->execute();
-			// }
-
-			// if (isset($_POST['search'])) {
-			// 	search_car($_POST['search_field']);
-			// }
-
-		?>
-
+			
 		<?php
 			
 			session_start();
