@@ -32,26 +32,27 @@
 
 					$sql = "SELECT * FROM `car`";
 					$result = $conn->query($sql);
+					$cars_array = $result->fetch_all();
 
 					//for every car in cars array, output the car sections/cards
-					while($car = $result->fetch_assoc()) {
+					foreach($cars_array as $car){
 
 				?>
 				<div class="col">
 					<div class="card" style="width: 20rem; margin-top: 5px;">
-					<img src=<?php echo $car['car_img_path']?> style="width: 100%; height:30vh;" alt=<?php echo $car['car_img_path']?> >
+					<img src=<?php echo $car[5]?> style="width: 100%; height:30vh;" alt=<?php echo $car[5]?> >
 						<div class="card-body">
 							
 							<!--Car Name-->
-							<h4><?php echo $car['car_model']?></h4>
+							<h4><?php echo $car[1]?></h4>
 							
 							<!--Car Transmission-->
-							<p class="card-text">Transmission: <?php echo $car['car_gear']?></p>
+							<p class="card-text">Transmission: <?php echo $car[2]?></p>
 							<!--Car Seats-->
-							<p class="card-text"><?php echo $car['car_seat']?> seater</p>
+							<p class="card-text"><?php echo $car[3]?> seater</p>
 							<!--Car Rent Price-->
-							<p class="card-text">£ <?php echo $car['car_price']?> / day</p>
-							<button type="button" class="btn btn-outline-primary">Rent out <?php echo $car['car_model']; ?></button>
+							<p class="card-text">£ <?php echo $car[4]?> / day</p>
+							<button type="button" class="btn btn-outline-primary">Rent out <?php echo $car[1]; ?></button>
 						</div>
 					</div>	
 				</div>
@@ -62,7 +63,7 @@
 				}else{
 					//when search is made, get value from field
 
-					$searchQuery = $_GET['search_field']."%";
+					$searchQuery = "%".$_GET['search_field']."%";
 					
 					try{
 					
@@ -73,27 +74,63 @@
 						$search_stmt->bind_param("ss", $searchQuery,$searchQuery);
 						$search_stmt->execute();
 						
-						//Return results of cars as array
-						$search_result = $search_stmt->get_result();	
-					
+						//Return results of cars as associative array
+						$search_result = $search_stmt->get_result();
+						$search_array = $search_result->fetch_all();
+
+						//check if user's search has any results
+						if(count($search_array)>0){
 			?>
 				<div>
 					<a>Your search results for "<?php echo $_GET['search_field']; ?>". </a>
+					<br>
 					<a href ="../CarRental/index.php"; ?>Reset search</a>
 				</div>
+			
 			<?php
 					
 						//for every car found in the query, render their cards
-						while($search_car = $search_result->fetch_assoc()){
+							foreach($search_array as $search_car){
 			?>
 			<div class="col">
-					<?php echo $search_car['car_model'];?>
+					<div class="col">
+					<div class="card" style="width: 20rem; margin-top: 5px;">
+					<img src=<?php echo $search_car[5]?> style="width: 100%; height:30vh;" alt=<?php echo $search_car[5]?> >
+						<div class="card-body">
+							
+							<!--Car Name-->
+							<h4><?php echo $search_car[1]?></h4>
+							
+							<!--Car Transmission-->
+							<p class="card-text">Transmission: <?php echo $search_car[2]?></p>
+							<!--Car Seats-->
+							<p class="card-text"><?php echo $search_car[3]?> seater</p>
+							<!--Car Rent Price-->
+							<p class="card-text">£ <?php echo $search_car[4]?> / day</p>
+							<button type="button" class="btn btn-outline-primary">Rent out <?php echo $search_car[1]; ?></button>
+						</div>
+					</div>	
+				</div>
 			</div>
 			<?php
-						}//endloop
+							}//endloop
+						}else{
+			?>
+						<a>Your search results for "<?php echo $_GET['search_field']; ?>". </a>
+						<br>
+						<a href ="../CarRental/index.php"; ?>Reset search</a>
+
+						<div class="alert alert-light" role="alert" style="margin-top: 20%; width:75%; left:10%;">
+						There was nothing found!
+						</div>
+						
+			<?php
+						}
 					}catch(Exception $e){
 			?>
-				There was an error in your search. Try again.
+				<div class="alert alert-danger" role="alert">
+				We could not complete your search. There is an error.
+				</div>.
 
 			<?php
 
