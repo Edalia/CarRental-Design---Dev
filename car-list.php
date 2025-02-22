@@ -1,13 +1,27 @@
 
 <?php
 	include "base/header.php";
-	include "search.php";
+
+	/**
+	 * Prevents php error where pickup_location variable is missing/undefined.
+	 * 
+	 * Page only renders when 'pickup_location' is set from bookings(index.php)
+	 * 
+	*/
+	if(isset($_GET['pickup_location'])){
+
+		$sql = "SELECT * FROM `location` WHERE `location_id` = ".$_GET['pickup_location']."";
+		$location = $conn->query($sql)->fetch_all();
+
 ?>
 
 	<div class="container text-center" style="margin-top:65px;">
+		<h3 style="margin-bottom:10px;"><?php echo "Cars available to pick from ".$location[0][1];?></h3>
+		
+		<?php include "search.php";?>
+		
 		<div class="row">
 			<?php
-
 			//if no search has been made, output all cars available in DB
 			if(isset($_GET['search'])== null){
 
@@ -124,6 +138,17 @@
 	</div>
 		
 <?php
+	}//endif
+	else{
+?>
+	<div class="card" style="margin-top: 10%; text-align: center;">
+		<div class="card-body">
+			Start from <a href="index.php">here</a> to choose your pickup/return location & dates to view available cars.
+		</div>
+	</div>
+<?php
+
+	}
 	include "base/footer.php";
 
 ?>
