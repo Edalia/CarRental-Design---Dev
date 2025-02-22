@@ -11,7 +11,11 @@
 	if(isset($_GET['pickup_location'])){
 
 		$sql = "SELECT * FROM `location` WHERE `location_id` = ".$_GET['pickup_location']."";
+		
 		$location = $conn->query($sql)->fetch_all();
+
+		
+		if($location){
 
 ?>
 
@@ -138,6 +142,14 @@
 	</div>
 		
 <?php
+
+	}else{
+?>
+	<div class="alert alert-danger" role="alert">
+		There is an error.
+	</div>.
+<?php
+		}
 	}//endif
 	else{
 ?>

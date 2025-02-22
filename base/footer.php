@@ -14,8 +14,5 @@
 			crossorigin="anonymous"
 		></script>
 		<script src='js/index.js'></script>
-		<?php
-			include "dep/booking.php";
-		?>
 	</body>
 </html>

@@ -58,5 +58,5 @@
 		
 <?php
 	include "base/footer.php";
-
+	include "dep/booking.php";
 ?>
