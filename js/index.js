@@ -1,12 +1,11 @@
 /**
  * toJSON - return date as 'yyyy-mm-dd' after slicing first 10 characters
  */
-let dateToday;
-const current_date = document
-	.getElementById("pickup")
-	.setAttribute("min", dateToday);
+let date_Today = new Date().toJSON().slice(0, 10);
 
-dateToday = new Date().toJSON().slice(0, 10);
+const pickup_date = document
+	.getElementById("pickup")
+	.setAttribute("min", date_Today);
 
 /***
  * When pickup date is selected, use this date as earliest date for return

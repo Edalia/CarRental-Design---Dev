@@ -115,8 +115,72 @@ function sign_in_user($e, $p, $conn){
     }       
 }
 
+function sign_in_admin($u, $p, $conn){
+
+    //ensure fields are not empty
+
+    if($u&&$p){
+        
+        //Prepare statements before sign in
+        $stmt = $conn->prepare("SELECT username, admin_password FROM `admin` WHERE username = ?");
+        $stmt->bind_param("s", $u);
+        $stmt->execute();
+
+        //Fetch email and password from DB
+        $query_admin = $stmt->get_result()->fetch_assoc();
+
+        //Check if this admin record is in DB
+        if($query_admin){
+
+            //verify password by comparing password field hash with DB hash
+            if(password_verify($p, $query_admin['admin_password'])){
+                
+                $found_admin = $conn->query("SELECT id, first_name,is_admin FROM `admin` WHERE username = '".$query_admin['username']."'");
+                $admin_account = $found_admin->fetch_assoc();
+
+                //start user session
+                session_start();
+                $_SESSION['admin_id'] = $admin_account['id'];
+                $_SESSION['is_admin'] = $admin_account['is_admin'];
+
+                
+                header('Location: index.php');
+
+		    }else{
+                echo
+                "<script>
+                    document.getElementById('message-div').innerHTML = 'Incorrect email or password';
+                    document.getElementById('message-div').className = 'alert alert-danger';
+                </script>";
+
+                $stmt->close();
+                $conn->close();
+            }
+        }else{
+            echo 
+            "<script>
+                document.getElementById('message-div').innerHTML = 'Error signing in';
+                document.getElementById('message-div').className = 'alert alert-danger';
+            </script>";
+            $stmt->close();
+            $conn->close();
+        }
+    }else{
+    echo
+                "<script>
+                    document.getElementById('message-div').innerHTML = 'Empty fields!';
+                    document.getElementById('message-div').className = 'alert alert-danger';
+                </script>";
+    }       
+}
 
 function logout(){
+    session_destroy();
+    header('Location: index.php');
+    exit();
+
+}
+function logout_admin(){
     session_destroy();
     header('Location: index.php');
     exit();

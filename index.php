@@ -18,12 +18,12 @@
 			<form action="booking.php" method="GET">
 				<div class="form-group">
 					<label for="pickup_date">Pickup date:</label>
-					<input type="date" id="pickup" name="pickup" class="form-control" onchange="date_duration(event)">
+					<input type="date" id="pickup" name="pickup" class="form-control" onchange="date_duration(event)" min=<?php echo $dateToday; ?> required>
 				</div>
 				
 				<div class="form-group">
 					<label for="return">Return date:</label>
-					<input type="date" id="return" name="return" class="form-control" min=<?php echo $dateToday; ?>>
+					<input type="date" id="return" name="return" class="form-control" required>
 				</div>
 				<input type="submit" class="btn btn-primary" name="book_car" value="Search for car" />
 			</form>
