@@ -3,33 +3,48 @@
 	include "base/header.php";
 
 	/**
-	 * Prevents php error where pickup_location variable is missing/undefined.
-	 * 
-	 * Page only renders when 'pickup_location' is set from bookings(index.php)
+	 * Only render page when user has confirmed pickup and return dates
 	 * 
 	*/
-	if(isset($_GET['pickup_location'])){
+	//if the dates have a value( not null ) & are not blank (empty string), render available cars
+	if(isset($_GET['pickup']) && isset($_GET['return']) && $_GET['pickup'] && $_GET['return']){
 
-		$sql = "SELECT * FROM `location` WHERE `location_id` = ".$_GET['pickup_location']."";
-		
-		$location = $conn->query($sql)->fetch_all();
+		$pickup_date = $_GET['pickup']; 
+		$return_date = $_GET['return'];
+		$duration_days;
 
+		/**
+			* Cars picked and returned on the same day count as 1 day.
+			* New variable -> 'day' used tp calculate total price for renting the car
+		*/
+		if($pickup_date == $return_date){
+			$duration_days = 1;
+		}else{
 		
-		if($location){
+		/**Change date values to timestamp since they are currently in string
+		 * Get duration in seconds
+		*/
+			$duration = strtotime($return_date) - strtotime($pickup_date);
+
+		//Round off to duration in days
+			$duration_days = round($duration / (60 * 60 * 24));
+		
+		}
 
 ?>
 
 	<div class="container text-center" style="margin-top:65px;">
-		<h3 style="margin-bottom:10px;"><?php echo "Cars available to pick from ".$location[0][1];?></h3>
 		
 		<?php include "search.php";?>
+		<p>Cars available to rent for <?php echo $duration_days; ?>day(s)
+		</p>
 		
 		<div class="row">
 			<?php
 			//if no search has been made, output all cars available in DB
 			if(isset($_GET['search'])== null){
 
-				$sql = "SELECT * FROM `car`";
+				$sql = "SELECT * FROM `car` WHERE `is_available` = 1";
 				$result = $conn->query($sql);
 				$cars_array = $result->fetch_all();
 
@@ -51,10 +66,35 @@
 						<p class="card-text"><?php echo $car[3]?> seater</p>
 						<!--Car Rent Price-->
 						<p class="card-text">£ <?php echo $car[4]?> / day</p>
-						<button type="button" class="btn btn-outline-primary">Rent out <?php echo $car[1]; ?></button>
+						<button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#confirmCar">Rent out <?php echo $car[1]; ?></button>
 					</div>
-				</div>	
+				</div>
+
+				<div class="modal fade" id="confirmCar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">Confirm your reservation</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="card-body">
+								<h4><?php echo $car[1]?></h4>
+								<p class="card-text">Total cost: <?php echo $car[4] * $duration_days?></p>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-primary">Save changes</button>
+						</div>
+						</div>
+					</div>
+				</div>
 			</div>
+			
+			
 		<?php
 
 				}//end of loop
@@ -69,7 +109,7 @@
 					/*	Search for records of cars according to car model OR according to transmission(auto/manual) .
 						Prepare statements to avoid injection.
 					*/
-					$search_stmt = $conn->prepare("SELECT * FROM `car` WHERE `car_model` LIKE ? OR `car_gear` LIKE ?");
+					$search_stmt = $conn->prepare("SELECT * FROM `car` WHERE `is_available` = 1 AND `car_model` LIKE ? OR `car_gear` LIKE ?");
 					$search_stmt->bind_param("ss", $searchQuery,$searchQuery);
 					$search_stmt->execute();
 					
@@ -106,7 +146,7 @@
 						<p class="card-text"><?php echo $search_car[3]?> seater</p>
 						<!--Car Rent Price-->
 						<p class="card-text">£ <?php echo $search_car[4]?> / day</p>
-						<button type="button" class="btn btn-outline-primary">Rent out <?php echo $search_car[1]; ?></button>
+						<button type="button" class="btn btn-outline-primary" >Rent out <?php echo $search_car[1]; ?></button>
 					</div>
 				</div>	
 			</div>
@@ -145,22 +185,14 @@
 
 	}else{
 ?>
-	<div class="alert alert-danger" role="alert">
-		There is an error.
-	</div>.
-<?php
-		}
-	}//endif
-	else{
-?>
 	<div class="card" style="margin-top: 10%; text-align: center;">
 		<div class="card-body">
-			Start from <a href="index.php">here</a> to choose your pickup/return location & dates to view available cars.
+			Start from <a href="index.php">here</a> to select your pickup/return dates to view available cars.
 		</div>
 	</div>
 <?php
-
 	}
+
 	include "base/footer.php";
 
 ?>

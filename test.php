@@ -1,16 +1,27 @@
-<?php
-include "dep/session.php";
-
-$sql = "SELECT * FROM `car` WHERE `car_gear` = 'Auto'";
-$result = $conn->query($sql);
-$cars_array = $result->fetch_all();
-
-//for every car in cars array, output the car sections/cards
-// while($car = $result->fetch_assoc()) 
+<!-- Button trigger modal -->
 
 
-foreach($cars_array as $car){
-    echo $car[1]."Number".count($cars_array).'<br>';
-}
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  Launch demo modal
+</button>
 
-?>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>

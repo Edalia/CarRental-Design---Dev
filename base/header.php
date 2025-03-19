@@ -16,7 +16,7 @@
 			crossorigin="anonymous"
 		/>
 	
-		<title>Car Rental</title>
+		<title>Car Rentals</title>
 	</head>
 	<body>
 		<?php include "dep/session.php";?>

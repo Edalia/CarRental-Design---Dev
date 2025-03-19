@@ -1,6 +1,6 @@
 <div class="card" style="margin-top: 20px; text-align: center;">
 		<div class="card-body" style>
-			<form class="form-inline my-2 my-lg-2" action="car-list" method="GET">
+				<form class="form-inline my-2 my-lg-2" <?php echo "action='".htmlspecialchars($_SERVER["PHP_SELF"])."' method='GET'"?>>
 				<input
 					class="form-control mr-sm-2"
 					name="search_field"
