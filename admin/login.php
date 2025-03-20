@@ -55,5 +55,7 @@ include 'base/header.php';
 
         //sign in user -> session.php
         sign_in_admin($username, $password,$conn);
+
+        unset($_POST['admin_login']);
     }
 ?>

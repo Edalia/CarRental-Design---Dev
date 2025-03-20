@@ -93,6 +93,8 @@
 
 			//sign in user -> session.php
 			sign_in_user($email, $password,$conn);
+			
+			unset($_POST['login']);
         }
         ?>
 	</body>

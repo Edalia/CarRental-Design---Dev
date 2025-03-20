@@ -51,7 +51,7 @@
 						<div class="form-group">
 							<label for="email">Email address</label>
 							<input
-								type="text"
+								type="email"
 								class="form-control"
 								name="email"
 								aria-describedby="emailHelp"
@@ -129,26 +129,11 @@
             $password = $_POST['password'];
             $confirm_password = $_POST['confirm_password'];
 
-            if($firstname && $surname && $email && $password){
-                if($password == $confirm_password){
-                    
-                    //Register user => session.php)
-                    register_user($firstname,$surname,$email,$password,$conn);
-                
-                }else{
-                    echo
-                    "<script>
-                        document.getElementById('message-div').innerHTML = 'Passwords do not match';
-                        document.getElementById('message-div').className = 'alert alert-danger';
-                    </script>";
-                }
-            }else{
-                echo
-                    "<script>
-                        document.getElementById('message-div').innerHTML = 'You left a field empty!';
-                        document.getElementById('message-div').className = 'alert alert-danger';
-                    </script>";
-            }
+            
+			//Register user => session.php)
+			register_user($firstname,$surname,$email,$password,$confirm_password,$conn);
+            
+			unset($_POST['register']);
         }
         ?>
 	</body>
