@@ -209,7 +209,7 @@ function sign_in_admin($username, $password, $conn){
 		    }else{
                 echo
                 "<script>
-                    document.getElementById('message-div').innerHTML = 'Incorrect email or password';
+                    document.getElementById('message-div').innerHTML = 'Incorrect username or password';
                     document.getElementById('message-div').className = 'alert alert-danger';
                 </script>";
 
