@@ -86,9 +86,9 @@
 				$cost = intval($_POST['cost']);
 
 
-			confirm_booking($user, $pickup, $return, $return, $car, $cost, $conn);
-
-			//unset($_POST['confirm_booking']);
+			confirm_booking($user, $car, $pickup, $return, $cost, $conn);
+			
+			unset($_POST['confirm_booking']);
 		}
 		
         ?>
