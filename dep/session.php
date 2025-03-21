@@ -147,7 +147,7 @@ function sign_in_user($email, $password, $conn){
                 $_SESSION['id'] = $user_account['user_id'];
 
                 
-                header('Location: index.php');
+                header('Location: home.php');
 
 		    }else{
                 echo
@@ -228,13 +228,35 @@ function sign_in_admin($username, $password, $conn){
     }       
 }
 
-function logout(){
-    session_destroy();
-    header('Location: index.php');
-    exit();
+function confirm_booking($user, $car,$pickup, $return, $cost, $con){
+   if(!$user || !$pickup || !$return || !$car || !$cost){
+    echo    "<script>
+                document.getElementById('message-div').innerHTML = 'There was an error confirming your booking';
+                document.getElementById('message-div').className = 'alert alert-danger';
+            </script>";
+   }else{
+        $stmt = $con->query("INSERT INTO `booking`(`id`, `user_id`, `car_id`, `pickup_date`, `return_date`, `total_price`, `car_returned`) VALUES (NULL,".$user.",".$car.",".$pickup.",".$return.",".$cost.", ". 0 .")");
+
+        $sql = "UPDATE `car` SET `is_available` = '0' WHERE `car`.`car_id` = ".$car."";
+        $update_car_availability = $con->query($sql);
+        
+        if($stmt && $update_car_availability){
+            
+            echo    "<script>
+                        document.getElementById('message-div').innerHTML = 'Your booking is successsful!';
+                        document.getElementById('message-div').className = 'alert alert-success';
+                    </script>"; 
+        }else{
+            echo    "<script>
+                        document.getElementById('message-div').innerHTML = 'There was an error confirming your booking';
+                        document.getElementById('message-div').className = 'alert alert-danger';
+                    </script>"; 
+        }
+   }
 
 }
-function logout_admin(){
+
+function logout(){
     session_destroy();
     header('Location: index.php');
     exit();
