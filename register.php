@@ -59,7 +59,7 @@
 								required
 							/>
 							<small id="emailHelp" class="form-text text-muted"
-								>We'll never share your email with anyone else.</small
+								>e.g user@mail.com</small
 							>
 						</div>
 						<div class="form-group">
@@ -68,9 +68,13 @@
 								type="password"
 								class="form-control"
 								name="password"
+								aria-describedby="passwordHelp"
 								placeholder="Password"
 								required
 							/>
+							<small id="passwordHelp" class="form-text text-muted"
+								>Must be at least 8 characters with: an uppercase letter, lowercase letter, number, special character</small
+							>
 						</div>
 						<div class="form-group">
 							<label for="confirm_password">Confirm Password</label>

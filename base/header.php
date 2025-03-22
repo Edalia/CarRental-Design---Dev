@@ -40,7 +40,11 @@
 
 	?>
 		<a class="nav-link disabled">Welcome, <?php echo $user['user_fname']; ?></a>
-
+		&nbsp
+		<a href="../CarRental/home.php"> Home | </a>
+		&nbsp
+		<a href="../CarRental/view-bookings.php">View my bookings |</a>
+		&nbsp
 		<form <?php echo "action='".htmlspecialchars($_SERVER["PHP_SELF"])."' method='POST'"?>>
 				<input type="submit" class="btn btn-outline-danger" name="logout" value="Logout"/>
 		</form>
@@ -52,9 +56,10 @@
 		}else{
 	?>
 	<div class="background-color: red;">
-		<a href="../CarRental/login.php">Sign in to your account </a>
-		<a>&nbsp;or&nbsp;</a>
-		<a href="../CarRental/register.php"> Register an account</a>
+		<a href="../CarRental/login.php">Sign in </a>
+		<a> to hire a car. </a>
+		<a href="../CarRental/register.php">  Register here </a>if you don't have an account. </a>
+		
 	</div>
 	<?php
 	

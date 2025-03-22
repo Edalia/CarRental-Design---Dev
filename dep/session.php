@@ -74,7 +74,7 @@ function register_user($f_name,$l_name,$email,$password,$confirm_password,$con){
     }
     elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     echo     "<script>
-                document.getElementById('message-div').innerHTML = '".$email." is an invalid email format.  E.g valid format: example@mail.com';
+                document.getElementById('message-div').innerHTML = '".$email." is an invalid email format.';
                 document.getElementById('message-div').className = 'alert alert-danger';
             </script>";
     }else{
@@ -116,6 +116,12 @@ function register_user($f_name,$l_name,$email,$password,$confirm_password,$con){
 
 //Sign in User
 function sign_in_user($email, $password, $conn){
+    if(!isset($_SESSION['login_attempt'])){
+        $_SESSION['login_attempt'] = 0;
+    }
+    
+        //check if there are 3 attempts already
+    
 
     //Check if there is an empty field
     if(!$email || !$password){
@@ -144,6 +150,7 @@ function sign_in_user($email, $password, $conn){
 
                 //start user session
                 session_start();
+                unset($_SESSION['login_attempt']);
                 $_SESSION['id'] = $user_account['user_id'];
 
                 
@@ -155,7 +162,23 @@ function sign_in_user($email, $password, $conn){
                     document.getElementById('message-div').innerHTML = 'Incorrect email or password';
                     document.getElementById('message-div').className = 'alert alert-danger';
                 </script>";
+                
+                $_SESSION['login_attempt']++;
 
+                if($_SESSION['login_attempt'] > 2){
+                    echo    "<script>
+                                document.getElementById('message-div').innerHTML = 'Too many password attempts. You cannot login right now';
+                                document.getElementById('message-div').className = 'alert alert-danger';
+                            
+                                //redirect to login
+                                window.setTimeout(function(){
+                                    window.location.href = 'index.php';
+                                }, 4000);
+                        
+                            </script>";
+
+                    unset($_SESSION['login_attempt']);
+                }
                 $stmt->close();
                 $conn->close();
             }
