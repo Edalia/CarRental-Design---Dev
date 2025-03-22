@@ -6,10 +6,14 @@ $password = "";
 $dbname = "car_rental";
 $_SESSION['id'] = null;
 
+
 // Create connection
+try{
 $conn = new mysqli($server, 
     $username, $password, $dbname);
-
+}catch(Exception $e){
+    throw "DB connection issue";
+}
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " 
@@ -17,30 +21,58 @@ if ($conn->connect_error) {
 }
 
 function user_exists($email, $conn){
-    $stmt = $conn->prepare("SELECT user_email FROM `user` WHERE user_email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
+    if($conn){
+        $stmt = $conn->prepare("SELECT user_email FROM `user` WHERE user_email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
 
-    //Fetch email and password from DB
-    $user_query_result = $stmt->get_result()->fetch_assoc();
+        //Fetch email and password from DB
+        $user_query_result = $stmt->get_result()->fetch_assoc();
 
-    if($user_query_result){
-        return true;
+        if($user_query_result){
+            return true;
+        }else{
+            return false;
+        }
     }else{
-        return false;
+        echo    "<script>
+                    document.getElementById('message-div').innerHTML = 'There was an error connecting to the database';
+                    document.getElementById('message-div').className = 'alert alert-danger';
+                </script>";
     }
-
 }
 
 //Register account
 function register_user($f_name,$l_name,$email,$password,$confirm_password,$con){
     $password_max_len = 8;
+    $character_max_len = 255;
+
     $password_format = "/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/";
 
     //Check if there is an empty field
     if(!$f_name || !$l_name || !$email || !$password || !$confirm_password){
     echo  "<script>
                 document.getElementById('message-div').innerHTML = 'You left a field empty!';
+                document.getElementById('message-div').className = 'alert alert-danger';
+            </script>";
+    }
+    elseif(strlen($f_name) > $character_max_len || strlen($l_name) > $character_max_len || strlen($email) > $character_max_len || strlen($password) > $character_max_len ){
+        echo    "<script>
+                    document.getElementById('message-div').innerHTML = 'Invalid inputs';
+                    document.getElementById('message-div').className = 'alert alert-danger';
+                </script>";
+    }
+    //check if user email already exists in DB
+    elseif(user_exists($email,$con)){
+    echo     "<script>
+                document.getElementById('message-div').innerHTML = 'A user already exists with the email address: ".$email." ';
+                document.getElementById('message-div').className = 'alert alert-danger';
+            </script>";
+    }
+    //check if email has valid format
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    echo     "<script>
+                document.getElementById('message-div').innerHTML = '".$email." is an invalid email format.';
                 document.getElementById('message-div').className = 'alert alert-danger';
             </script>";
     }
@@ -65,19 +97,7 @@ function register_user($f_name,$l_name,$email,$password,$confirm_password,$con){
                 document.getElementById('message-div').className = 'alert alert-danger';
             </script>";
     }
-    //check if user email already exists in DB
-    elseif(user_exists($email,$con)){
-    echo     "<script>
-                document.getElementById('message-div').innerHTML = 'A user already exists with the email address: ".$email." ';
-                document.getElementById('message-div').className = 'alert alert-danger';
-            </script>";
-    }
-    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo     "<script>
-                document.getElementById('message-div').innerHTML = '".$email." is an invalid email format.';
-                document.getElementById('message-div').className = 'alert alert-danger';
-            </script>";
-    }else{
+    else{
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
 
         // prepare and bind - Against SQL Injection
@@ -116,20 +136,32 @@ function register_user($f_name,$l_name,$email,$password,$confirm_password,$con){
 
 //Sign in User
 function sign_in_user($email, $password, $conn){
+    $character_max_len = 255;
+    
+    //initialise a login attempt counter if one doesnt exist already
     if(!isset($_SESSION['login_attempt'])){
         $_SESSION['login_attempt'] = 0;
     }
-    
-        //check if there are 3 attempts already
-    
-
+    //Check if inputs have more than 255 characters
+    elseif(strlen($email) > $character_max_len || strlen($password) > $character_max_len){
+        echo    "<script>
+                    document.getElementById('message-div').innerHTML = 'Invalid inputs!';
+                    document.getElementById('message-div').className = 'alert alert-danger';
+                </script>";
+    }
     //Check if there is an empty field
-    if(!$email || !$password){
+    elseif(!$email || !$password){
         echo    "<script>
                     document.getElementById('message-div').innerHTML = 'You left a field empty!';
                     document.getElementById('message-div').className = 'alert alert-danger';
                 </script>";
-
+    }
+    //check if email provided is valid
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    echo     "<script>
+                document.getElementById('message-div').innerHTML = '".$email." is an invalid email format.';
+                document.getElementById('message-div').className = 'alert alert-danger';
+            </script>";
     }else{
         //Prepare statements before sign in
         $stmt = $conn->prepare("SELECT user_email,user_password FROM `user` WHERE user_email = ?");
@@ -195,13 +227,20 @@ function sign_in_user($email, $password, $conn){
 }
 
 function sign_in_admin($username, $password, $conn){
-
+    $character_max_len = 255;
     //Check if fields are empty
     if(!$username || !$password){
         echo    "<script>
                 document.getElementById('message-div').innerHTML = 'You left a field empty!';
                 document.getElementById('message-div').className = 'alert alert-danger';
             </script>";
+            
+    }//Check if inputs have more than 255 characters
+    elseif(strlen($username) > $character_max_len || strlen($password) > $character_max_len){
+        echo    "<script>
+                    document.getElementById('message-div').innerHTML = 'Invalid inputs!';
+                    document.getElementById('message-div').className = 'alert alert-danger';
+                </script>";
     }else{
 
         //Prepare statements before sign in

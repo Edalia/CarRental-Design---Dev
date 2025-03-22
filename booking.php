@@ -48,7 +48,7 @@
 ?>
 	<div class="card" style="margin-top: 10%; text-align: center;">
 		<div class="card-body">
-			<a href="login.php">Sign in to your accout</a> to book a car or <a href="register.php">Register</a> an account here.
+			<a href="login.php">Sign in to your account</a> to book a car or <a href="register.php">Register</a> an account here.
 		</div>
 	</div>
 <?php
