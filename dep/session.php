@@ -182,11 +182,16 @@ function sign_in_user($email, $password, $conn){
 
                 //start user session
                 session_start();
-                unset($_SESSION['login_attempt']);
+
+                //remove the login attempt counter 
+                unset($_SESSION['login_attempt']);        
+
+                //create a new session
                 $_SESSION['id'] = $user_account['user_id'];
 
                 
                 header('Location: home.php');
+                exit();
 
 		    }else{
                 echo
@@ -234,7 +239,7 @@ function sign_in_admin($username, $password, $conn){
                 document.getElementById('message-div').innerHTML = 'You left a field empty!';
                 document.getElementById('message-div').className = 'alert alert-danger';
             </script>";
-            
+
     }//Check if inputs have more than 255 characters
     elseif(strlen($username) > $character_max_len || strlen($password) > $character_max_len){
         echo    "<script>
@@ -291,12 +296,21 @@ function sign_in_admin($username, $password, $conn){
 }
 
 function confirm_booking($user, $car,$pickup, $return, $cost, $con){
-   if(!$user || !$pickup || !$return || !$car || !$cost){
+    $character_max_len = 255;
+
+    if(!$user || !$pickup || !$return || !$car || !$cost){
     echo    "<script>
                 document.getElementById('message-div').innerHTML = 'There was an error confirming your booking';
                 document.getElementById('message-div').className = 'alert alert-danger';
             </script>";
-   }else{
+   }
+   elseif(strlen($user) > $character_max_len || strlen($pickup) > $character_max_len || strlen($return) > $character_max_len || strlen($car) > $character_max_len || strlen($cost) > $character_max_len){
+    echo    "<script>
+                document.getElementById('message-div').innerHTML = 'There was an error confirming your booking';
+                document.getElementById('message-div').className = 'alert alert-danger';
+            </script>";
+   }
+   else{
         $stmt = $con->prepare("INSERT INTO `booking`(`id`, `user_id`, `car_id`, `pickup_date`, `return_date`, `total_price`, `car_returned`) 
                             VALUES (NULL,?,?,?,?,?,0)");
         $stmt->bind_param("iissi", $user, $car, $pickup,$return, $cost);
