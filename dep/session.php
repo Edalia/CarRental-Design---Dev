@@ -142,17 +142,17 @@ function sign_in_user($email, $password, $conn){
     if(!isset($_SESSION['login_attempt'])){
         $_SESSION['login_attempt'] = 0;
     }
-    //Check if inputs have more than 255 characters
-    elseif(strlen($email) > $character_max_len || strlen($password) > $character_max_len){
-        echo    "<script>
-                    document.getElementById('message-div').innerHTML = 'Invalid inputs!';
-                    document.getElementById('message-div').className = 'alert alert-danger';
-                </script>";
-    }
     //Check if there is an empty field
     elseif(!$email || !$password){
         echo    "<script>
                     document.getElementById('message-div').innerHTML = 'You left a field empty!';
+                    document.getElementById('message-div').className = 'alert alert-danger';
+                </script>";
+    }
+    //Check if inputs have more than 255 characters
+    elseif(strlen($email) > $character_max_len || strlen($password) > $character_max_len){
+        echo    "<script>
+                    document.getElementById('message-div').innerHTML = 'Invalid inputs!';
                     document.getElementById('message-div').className = 'alert alert-danger';
                 </script>";
     }
