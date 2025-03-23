@@ -142,8 +142,9 @@ function sign_in_user($email, $password, $conn){
     if(!isset($_SESSION['login_attempt'])){
         $_SESSION['login_attempt'] = 0;
     }
+
     //Check if there is an empty field
-    elseif(!$email || !$password){
+    if(!$email || !$password){
         echo    "<script>
                     document.getElementById('message-div').innerHTML = 'You left a field empty!';
                     document.getElementById('message-div').className = 'alert alert-danger';
@@ -204,13 +205,13 @@ function sign_in_user($email, $password, $conn){
 
                 if($_SESSION['login_attempt'] > 2){
                     echo    "<script>
-                                document.getElementById('message-div').innerHTML = 'Too many password attempts. You cannot login right now';
+                                document.getElementById('message-div').innerHTML = 'Too many password attempts. You cannot login right now. Redirecting...';
                                 document.getElementById('message-div').className = 'alert alert-danger';
                             
                                 //redirect to login
                                 window.setTimeout(function(){
                                     window.location.href = 'index.php';
-                                }, 4000);
+                                }, 3500);
                         
                             </script>";
 
