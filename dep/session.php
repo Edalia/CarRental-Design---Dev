@@ -298,7 +298,8 @@ function sign_in_admin($username, $password, $conn){
 
 function confirm_booking($user, $car,$pickup, $return, $cost, $con){
     $character_max_len = 255;
-
+    $bool_limit = 1;
+    
     if(!$user || !$pickup || !$return || !$car || !$cost){
     echo    "<script>
                 document.getElementById('message-div').innerHTML = 'There was an error confirming your booking';
