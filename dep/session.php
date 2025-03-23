@@ -171,7 +171,7 @@ function sign_in_user($email, $password, $conn){
                 document.getElementById('message-div').innerHTML = 'There was an error connecting to the database';
                 document.getElementById('message-div').className = 'alert alert-danger';
             </script>";
-}
+    }
     else{
         //Check if user with the email has an account
         if(user_exists($email, $conn)){
@@ -181,55 +181,62 @@ function sign_in_user($email, $password, $conn){
 
             $user_query_result = $stmt->get_result()->fetch_assoc();
             
-            //verify password by comparing password field hash with DB hash
-            if(password_verify($password, $user_query_result['user_password'])){
-                
-                $found_user = $conn->query("SELECT user_id, user_fname FROM `user` WHERE user_email = '".$user_query_result['user_email']."'");
-                $user_account = $found_user->fetch_assoc();
+            if($user_query_result){
+                //verify password by comparing password field hash with DB hash
+                if(password_verify($password, $user_query_result['user_password'])){
+                    
+                    $found_user = $conn->query("SELECT user_id, user_fname FROM `user` WHERE user_email = '".$user_query_result['user_email']."'");
+                    $user_account = $found_user->fetch_assoc();
 
-                //log sign in
-                $conn->query("UPDATE `user` SET `last_login`= now() WHERE `user_id` = ".$user_account['user_id']."");
+                    //log sign in
+                    $conn->query("UPDATE `user` SET `last_login`= now() WHERE `user_id` = ".$user_account['user_id']."");
 
-                //remove the login attempt counter 
-                unset($_SESSION['login_attempt']);
-                
-                //remove any old session       
-                unset($_SESSION['id']);
+                    //remove the login attempt counter 
+                    unset($_SESSION['login_attempt']);
+                    
+                    //remove any old session       
+                    unset($_SESSION['id']);
 
-                //create a new session
-                $_SESSION['id'] = $user_account['user_id'];
+                    //create a new session
+                    $_SESSION['id'] = $user_account['user_id'];
 
-                
-                header('Location: home.php');
-                exit();
+                    
+                    header('Location: home.php');
+                    exit();
 
-		    }else{
+                }else{
+                    echo
+                    "<script>
+                        document.getElementById('message-div').innerHTML = 'Incorrect email or password';
+                        document.getElementById('message-div').className = 'alert alert-danger';
+                    </script>";
+                    
+                    $_SESSION['login_attempt']++;
+
+                    if($_SESSION['login_attempt'] > 2){
+                        echo    "<script>
+                                    document.getElementById('message-div').innerHTML = 'Too many password attempts. You cannot login right now. Redirecting...';
+                                    document.getElementById('message-div').className = 'alert alert-danger';
+                                
+                                    //redirect to login
+                                    window.setTimeout(function(){
+                                        window.location.href = 'index.php';
+                                    }, 3500);
+                            
+                                </script>";
+
+                        unset($_SESSION['login_attempt']);
+                    }
+                    $stmt->close();
+                    $conn->close();
+                }
+            }else{
                 echo
                 "<script>
-                    document.getElementById('message-div').innerHTML = 'Incorrect email or password';
+                    document.getElementById('message-div').innerHTML = 'Error signing in';
                     document.getElementById('message-div').className = 'alert alert-danger';
                 </script>";
-                
-                $_SESSION['login_attempt']++;
-
-                if($_SESSION['login_attempt'] > 2){
-                    echo    "<script>
-                                document.getElementById('message-div').innerHTML = 'Too many password attempts. You cannot login right now. Redirecting...';
-                                document.getElementById('message-div').className = 'alert alert-danger';
-                            
-                                //redirect to login
-                                window.setTimeout(function(){
-                                    window.location.href = 'index.php';
-                                }, 3500);
-                        
-                            </script>";
-
-                    unset($_SESSION['login_attempt']);
-                }
-                $stmt->close();
-                $conn->close();
             }
-
         }
         else{
         echo
