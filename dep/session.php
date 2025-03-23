@@ -101,7 +101,7 @@ function register_user($f_name,$l_name,$email,$password,$confirm_password,$con){
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
 
         // prepare and bind - Against SQL Injection
-        $stmt = $con->prepare("INSERT INTO `user`(`user_id`, `user_fname`, `user_sname`, `user_email`, `user_password`,`created`,`last_login`) VALUES (NULL, ?, ?, ?, ?, now(), now())");
+        $stmt = $con->prepare("INSERT INTO `user`(`user_id`, `user_fname`, `user_sname`, `user_email`, `user_password`,`created`,`last_login`,`failed_login`) VALUES (NULL, ?, ?, ?, ?, now(), now(), NULL)");
         $stmt->bind_param("ssss", $f_name, $l_name, $email, $password_hash);
         $stmt->execute();
 
@@ -214,6 +214,17 @@ function sign_in_user($email, $password, $conn){
                     $_SESSION['login_attempt']++;
 
                     if($_SESSION['login_attempt'] > 2){
+                        //log unsuccessful login attempt
+                        $log_stmt = $conn->prepare("SELECT user_id FROM `user` WHERE user_email = ?");
+                        $log_stmt->bind_param("s", $email);
+                        $log_stmt->execute();
+
+                        $user_query_result = $log_stmt->get_result()->fetch_assoc();
+
+                        //log unsuccessful attempt
+                        $conn->query("UPDATE `user` SET `failed_login`= now() WHERE `user_id` = ".$user_query_result['user_id']."");
+
+
                         echo    "<script>
                                     document.getElementById('message-div').innerHTML = 'Too many password attempts. You cannot login right now. Redirecting...';
                                     document.getElementById('message-div').className = 'alert alert-danger';
@@ -226,6 +237,9 @@ function sign_in_user($email, $password, $conn){
                                 </script>";
 
                         unset($_SESSION['login_attempt']);
+
+                        $log_stmt->close();
+                        
                     }
                     $stmt->close();
                     $conn->close();
