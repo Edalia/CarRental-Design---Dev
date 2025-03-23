@@ -38,6 +38,7 @@
 			//fetch user first name
 			$user = $conn->query("SELECT user_id,user_fname,user_sname FROM `user` WHERE user_id = '".$_SESSION['id']."'")->fetch_assoc();
 
+			if($user){
 	?>
 		<a class="nav-link disabled">Welcome, <?php echo $user['user_fname']; ?></a>
 		&nbsp
@@ -50,8 +51,9 @@
 		</form>
 
 	<?php 
-			if (isset($_POST['logout'])){
-				logout();
+				if (isset($_POST['logout'])){
+					logout();
+				}
 			}
 		}else{
 	?>

@@ -59,13 +59,10 @@
 						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 						
 						<form method="POST" action="">
-						
-							<input type="hidden" name="user" value=<?php echo $user['user_id'];?> />
 							<input type="hidden" name="pickup" value=<?php echo $pickup_date; ?> />
 							<input type="hidden" name="return" value=<?php echo $return_date; ?> />
 							<input type="hidden" name="car" value=<?php echo $car[0]; ?> />
 							<input type="hidden" name="cost" value=<?php echo $cost; ?> />
-							
 							<button type="submit" class="btn btn-primary" class="btn btn-primary" name="confirm_booking">Confirm booking</button>
 						</form>
 					</div>
@@ -79,7 +76,7 @@
         }//end of loop
 		
 		if(isset($_POST['confirm_booking'])){
-				$user = intval($_POST['user']);
+				$user = $_SESSION['id'];
 				$pickup = $_POST['pickup'];
 				$return = $_POST['return'];
 				$car = intval($_POST['car']);

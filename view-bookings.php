@@ -16,9 +16,10 @@ if(isset($_SESSION['id'])){
         <thead>
             <tr>
             <th scope="col">Booking ID</th>
+            <th scope="col">Booked on</th>
             <th scope="col">Car</th>
             <th scope="col">Pickup On</th>
-            <th scope="col">Return By</th>
+            <th scope="col">Return By</th>      
             </tr>
         </thead>
         <tbody>
@@ -31,13 +32,20 @@ if(isset($_SESSION['id'])){
 
                         $cars_array = $conn->query($car_query)->fetch_all();
                         $users_array = $conn->query($user_query)->fetch_all();
+                        
+                        //covnert from string to datetime
+                        $booking_date = date_create($booking[7]);
+                        $pickup = date_create($booking[3]);
+                        $return = date_create($booking[4]);
+
 
             ?>
             <tr>
                 <td><?php echo $booking[0]; ?></td>
+                <td><?php echo date_format($booking_date,"d M Y"); ?></td>
                 <td><img src=<?php echo $cars_array[0][5]; ?> style="width: 100px; height:100px;"><?php echo $cars_array[0][1]; ?></td>
-                <td><?php echo $booking[3]; ?></td>
-                <td><?php echo $booking[4]; ?></td>
+                <td><?php echo date_format($pickup,"d M Y"); ?></td>
+                <td><?php echo date_format($return,"d M Y"); ?></td>
             </tr>
             <?php
                     }

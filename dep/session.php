@@ -26,7 +26,7 @@ function user_exists($email, $conn){
         $stmt->bind_param("s", $email);
         $stmt->execute();
 
-        //Fetch email and password from DB
+        //Get result of query
         $user_query_result = $stmt->get_result()->fetch_assoc();
 
         if($user_query_result){
@@ -101,7 +101,7 @@ function register_user($f_name,$l_name,$email,$password,$confirm_password,$con){
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
 
         // prepare and bind - Against SQL Injection
-        $stmt = $con->prepare("INSERT INTO `user`(`user_id`, `user_fname`, `user_sname`, `user_email`, `user_password`) VALUES (NULL, ?, ?, ?, ?)");
+        $stmt = $con->prepare("INSERT INTO `user`(`user_id`, `user_fname`, `user_sname`, `user_email`, `user_password`,`created`,`last_login`) VALUES (NULL, ?, ?, ?, ?, now(), now())");
         $stmt->bind_param("ssss", $f_name, $l_name, $email, $password_hash);
         $stmt->execute();
 
@@ -159,33 +159,42 @@ function sign_in_user($email, $password, $conn){
     }
     //check if email provided is valid
     elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo     "<script>
-                document.getElementById('message-div').innerHTML = '".$email." is an invalid email format.';
+        echo     "<script>
+                    document.getElementById('message-div').innerHTML = '".$email." is an invalid email format.';
+                    document.getElementById('message-div').className = 'alert alert-danger';
+                </script>";
+    }
+    //Check if DB can connect
+    elseif(!$conn){
+        echo 
+            "<script>
+                document.getElementById('message-div').innerHTML = 'There was an error connecting to the database';
                 document.getElementById('message-div').className = 'alert alert-danger';
             </script>";
-    }else{
-        //Prepare statements before sign in
-        $stmt = $conn->prepare("SELECT user_email,user_password FROM `user` WHERE user_email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
+}
+    else{
+        //Check if user with the email has an account
+        if(user_exists($email, $conn)){
+            $stmt = $conn->prepare("SELECT user_email, user_password FROM `user` WHERE user_email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
 
-        //Fetch email and password from DB
-        $user_query_result = $stmt->get_result()->fetch_assoc();
-
-        //Check if this user record is in DB
-        if($user_query_result){
-
+            $user_query_result = $stmt->get_result()->fetch_assoc();
+            
             //verify password by comparing password field hash with DB hash
             if(password_verify($password, $user_query_result['user_password'])){
                 
                 $found_user = $conn->query("SELECT user_id, user_fname FROM `user` WHERE user_email = '".$user_query_result['user_email']."'");
                 $user_account = $found_user->fetch_assoc();
 
-                //start user session
-                session_start();
+                //log sign in
+                $conn->query("UPDATE `user` SET `last_login`= now() WHERE `user_id` = ".$user_account['user_id']."");
 
                 //remove the login attempt counter 
-                unset($_SESSION['login_attempt']);        
+                unset($_SESSION['login_attempt']);
+                
+                //remove any old session       
+                unset($_SESSION['id']);
 
                 //create a new session
                 $_SESSION['id'] = $user_account['user_id'];
@@ -220,14 +229,14 @@ function sign_in_user($email, $password, $conn){
                 $stmt->close();
                 $conn->close();
             }
-        }else{
-            echo 
-            "<script>
-                document.getElementById('message-div').innerHTML = 'Error signing in';
-                document.getElementById('message-div').className = 'alert alert-danger';
-            </script>";
-            $stmt->close();
-            $conn->close();
+
+        }
+        else{
+        echo
+                "<script>
+                    document.getElementById('message-div').innerHTML = 'Incorrect email or password';
+                    document.getElementById('message-div').className = 'alert alert-danger';
+                </script>";
         }
     }       
 }
@@ -266,12 +275,16 @@ function sign_in_admin($username, $password, $conn){
                 $found_admin = $conn->query("SELECT id, first_name,is_admin FROM `admin` WHERE username = '".$admin_query_result['username']."'");
                 $admin_account = $found_admin->fetch_assoc();
 
-                //start user session
-                session_start();
+                //log login
+                $conn->query("UPDATE `admin` SET `last_login`= now() WHERE `id` = ".$admin_account['id']."");
+
+                //destroy previous sessions
+                unset($_SESSION['admin_id']);
+                unset($_SESSION['is_admin']);
+                
                 $_SESSION['admin_id'] = $admin_account['id'];
                 $_SESSION['is_admin'] = $admin_account['is_admin'];
 
-                
                 header('Location: index.php');
 
 		    }else{
@@ -301,11 +314,17 @@ function confirm_booking($user, $car,$pickup, $return, $cost, $con){
     $bool_limit = 1;
     
     if(!$user || !$pickup || !$return || !$car || !$cost){
-    echo    "<script>
-                document.getElementById('message-div').innerHTML = 'There was an error confirming your booking';
-                document.getElementById('message-div').className = 'alert alert-danger';
-            </script>";
-   }
+        echo    "<script>
+                    document.getElementById('message-div').innerHTML = 'There was an error confirming your booking';
+                    document.getElementById('message-div').className = 'alert alert-danger';
+                </script>";
+    }
+    elseif($pickup > $return){
+        echo    "<script>
+                            document.getElementById('message-div').innerHTML = 'There was an error confirming your booking';
+                            document.getElementById('message-div').className = 'alert alert-danger';
+                        </script>";
+    }
    elseif(strlen($user) > $character_max_len || strlen($pickup) > $character_max_len || strlen($return) > $character_max_len || strlen($car) > $character_max_len || strlen($cost) > $character_max_len){
     echo    "<script>
                 document.getElementById('message-div').innerHTML = 'There was an error confirming your booking';
@@ -313,8 +332,11 @@ function confirm_booking($user, $car,$pickup, $return, $cost, $con){
             </script>";
    }
    else{
-        $stmt = $con->prepare("INSERT INTO `booking`(`id`, `user_id`, `car_id`, `pickup_date`, `return_date`, `total_price`, `car_returned`) 
-                            VALUES (NULL,?,?,?,?,?,0)");
+        //create time for log
+        $date = date('Y-m-d h:i:s');
+
+        $stmt = $con->prepare("INSERT INTO `booking`(`id`, `user_id`, `car_id`, `pickup_date`, `return_date`, `total_price`, `car_returned`,`created`) 
+                            VALUES (NULL,?,?,?,?,?,0,now())");
         $stmt->bind_param("iissi", $user, $car, $pickup,$return, $cost);
         $stmt->execute();
         
@@ -328,7 +350,7 @@ function confirm_booking($user, $car,$pickup, $return, $cost, $con){
                         document.getElementById('message-div').className = 'alert alert-success';
 
                         window.setTimeout(function(){
-                        window.location.href = 'home.php';
+                        window.location.href = 'view-bookings.php';
                     }, 3000);
 
                     </script>";
@@ -344,10 +366,6 @@ function confirm_booking($user, $car,$pickup, $return, $cost, $con){
             $con->close();
         }
    }
-
-}
-
-function load_user_bookings($user,$conn){
 
 }
 

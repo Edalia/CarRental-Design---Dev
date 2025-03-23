@@ -137,7 +137,7 @@
 			//Register user => session.php)
 			register_user($firstname,$surname,$email,$password,$confirm_password,$conn);
             
-			unset($_POST['register']);
+			// unset($_POST['register']);
         }
         ?>
 	</body>
