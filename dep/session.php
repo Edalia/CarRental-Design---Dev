@@ -51,10 +51,10 @@ function register_user($f_name,$l_name,$email,$password,$confirm_password,$con){
 
     //Check if there is an empty field
     if(!$f_name || !$l_name || !$email || !$password || !$confirm_password){
-    echo  "<script>
-                document.getElementById('message-div').innerHTML = 'You left a field empty!';
-                document.getElementById('message-div').className = 'alert alert-danger';
-            </script>";
+        echo  "<script>
+                    document.getElementById('message-div').innerHTML = 'You left a field empty!';
+                    document.getElementById('message-div').className = 'alert alert-danger';
+                </script>";
     }
     elseif(strlen($f_name) > $character_max_len || strlen($l_name) > $character_max_len || strlen($email) > $character_max_len || strlen($password) > $character_max_len ){
         echo    "<script>
@@ -64,38 +64,38 @@ function register_user($f_name,$l_name,$email,$password,$confirm_password,$con){
     }
     //check if user email already exists in DB
     elseif(user_exists($email,$con)){
-    echo     "<script>
-                document.getElementById('message-div').innerHTML = 'A user already exists with the email address: ".$email." ';
-                document.getElementById('message-div').className = 'alert alert-danger';
-            </script>";
+        echo     "<script>
+                    document.getElementById('message-div').innerHTML = 'A user already exists with the email address: ".$email." ';
+                    document.getElementById('message-div').className = 'alert alert-danger';
+                </script>";
     }
     //check if email has valid format
     elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo     "<script>
-                document.getElementById('message-div').innerHTML = '".$email." is an invalid email format.';
-                document.getElementById('message-div').className = 'alert alert-danger';
-            </script>";
+        echo     "<script>
+                    document.getElementById('message-div').innerHTML = '".$email." is an invalid email format.';
+                    document.getElementById('message-div').className = 'alert alert-danger';
+                </script>";
     }
     //Passwords do not match, print error message
     elseif($password != $confirm_password){
-    echo    "<script>
-                document.getElementById('message-div').innerHTML = 'Your passwords do not match!';
-                document.getElementById('message-div').className = 'alert alert-danger';
-            </script>";
+        echo    "<script>
+                    document.getElementById('message-div').innerHTML = 'Your passwords do not match!';
+                    document.getElementById('message-div').className = 'alert alert-danger';
+                </script>";
     }
     //Password is not the required length,, print error message
     elseif($password_max_len > strlen($password)){
-    echo    "<script>
-                document.getElementById('message-div').innerHTML = 'Your password is less than 8 characters';
-                document.getElementById('message-div').className = 'alert alert-danger';
-            </script>";
+        echo    "<script>
+                    document.getElementById('message-div').innerHTML = 'Your password is less than 8 characters';
+                    document.getElementById('message-div').className = 'alert alert-danger';
+                </script>";
     }
     //Password is not complex, print error message
     elseif(!preg_match($password_format,$password)){
-    echo     "<script>
-                document.getElementById('message-div').innerHTML = 'Your password must have at least: one uppercase letter,one lowercase letter, one special character and one number ';
-                document.getElementById('message-div').className = 'alert alert-danger';
-            </script>";
+        echo     "<script>
+                    document.getElementById('message-div').innerHTML = 'Your password must have at least: one uppercase letter,one lowercase letter, one special character and one number ';
+                    document.getElementById('message-div').className = 'alert alert-danger';
+                </script>";
     }
     else{
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
