@@ -1,4 +1,5 @@
 ## Overview
+The system is a prototype of a web application to demonstrate the design and development of a secure system.
 
 ## Objectives
 * Specify the system requirements of the CarRentals web application using formal and informal 
